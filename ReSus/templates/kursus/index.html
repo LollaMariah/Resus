@@ -1,0 +1,27 @@
+{% extends "../base/base.html" %} {% block title %} Index Page {% endblock %}
+{%block template %}
+<div class="container-lg my-5">
+  <div class="row justify-content-center align-items-center">
+    <div class="col-md-5">
+      <!-- Tambahkan gambar di sini -->
+      <img
+        src="https://algrafika.com/wp-content/uploads/2022/07/Robo-Home.png"
+        class="img-fluid"
+        alt="Robot Image"
+      />
+    </div>
+    <div class="col-md-6">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search for courses..."
+        />
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
