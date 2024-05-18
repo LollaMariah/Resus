@@ -1,0 +1,11 @@
+{% extends "../base/base.html" %} {% block title %} Index Page {% endblock %}
+{%block template %}
+<body>
+  <h1>List of Persons</h1>
+  <ul>
+    {% for person in persons %}
+    <li>{{ person.name }} - {{ person.age }}</li>
+    {% endfor %}
+  </ul>
+</body>
+{% endblock %}

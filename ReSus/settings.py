@@ -56,6 +56,10 @@ DATABASES = {
     }
 }
 
+NEO4J_URI = "neo4j+s://cb7896fd.databases.neo4j.io"
+NEO4J_USER = "neo4j"
+NEO4J_PASSWORD = "Sl-sbZMNY1p-6Gm08k6Eg5ZMrseubfURvhzdVsYDg4k"
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -68,8 +72,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

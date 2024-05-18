@@ -17,18 +17,18 @@
 
     <style>
       /* Custom style to handle content margin top */
-      body {
+      .content-wrapper {
         padding-top: 80px; /* Adjust this value based on your navbar height */
       }
 
       @media (max-width: 768px) {
-        body {
+        .content-wrapper {
           padding-top: 60px; /* Adjust this value for smaller screens */
         }
       }
     </style>
   </head>
-  <body>
+  <body class="flex flex-col min-h-screen">
     <!-- Navbar -->
     <nav class="bg-white w-full fixed top-0 shadow-lg">
       <div class="container mx-auto h-20 flex justify-between items-center">
@@ -59,7 +59,7 @@
             <div class="ml-8 flex items-center">
               <a
                 class="inline-block py-2 px-3 text-blue-700 hover:text-gray-700 rounded-full"
-                href="#"
+                href="/registrasi"
               >
                 <div
                   class="flex items-center relative cursor-pointer whitespace-nowrap"
@@ -69,7 +69,7 @@
               </a>
               <a
                 class="inline-block py-2 px-3 text-blue-700 hover:text-gray-700 rounded-full"
-                href="#"
+                href="/login"
               >
                 <div
                   class="flex items-center relative cursor-pointer whitespace-nowrap"
@@ -84,18 +84,18 @@
     </nav>
 
     <!-- Content -->
-    <div class="mt-20">
+    <main class="flex-grow content-wrapper mt-20">
       <!-- Margin top to push content below navbar -->
       {% block template %}{% endblock %}
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-900">
+    <footer class="bg-white dark:bg-gray-900 w-full mt-auto">
       <div class="container px-6 py-8 mx-auto">
         <hr class="border-blue-800 border-solid border-2 my-1" />
         <div class="flex flex-col items-center sm:flex-row sm:justify-between">
           <p class="text-sm text-blue-700">
-            © Copyright 2024 ReSus | Privacy Police
+            © Copyright 2024 ReSus | Privacy Policy
           </p>
           <div class="flex mt-3 -mx-2 sm:mt-0">
             <a
