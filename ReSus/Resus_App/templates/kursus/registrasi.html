@@ -1,0 +1,81 @@
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous"
+/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://unpkg.com/alpinejs@3.2.3/dist/cdn.min.js"></script>
+<div
+  class="flex justify-center items-center h-screen bg-gradient-to-b from-[#305EE7] to-[#dcd5d5]"
+>
+  <div class="w-full max-w-md px-6 py-8 bg-white rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-center text-[#063970] mb-6">
+      Registrasi
+    </h2>
+    <form class="space-y-4">
+      <div class="relative">
+        <label for="name" class="block text-sm font-medium text-gray-700"
+          >Full Name</label
+        >
+        <div class="mt-1">
+          <input
+            id="name"
+            type="text"
+            class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400"
+            placeholder="Enter your full name"
+          />
+        </div>
+      </div>
+      <div class="relative">
+        <label for="email" class="block text-sm font-medium text-gray-700"
+          >Email Address</label
+        >
+        <div class="mt-1">
+          <input
+            id="email"
+            type="email"
+            class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400"
+            placeholder="Enter your email"
+          />
+        </div>
+      </div>
+      <div class="relative">
+        <label for="password" class="block text-sm font-medium text-gray-700"
+          >Password</label
+        >
+        <div class="mt-1">
+          <input
+            id="password"
+            type="password"
+            class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400"
+            placeholder="Enter your password"
+          />
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="text-sm text-gray-700">
+          <input
+            type="checkbox"
+            class="mr-1"
+            onchange="document.getElementById('password').type = this.checked ? 'text' : 'password'"
+          />
+          Show Password
+        </label>
+        <a href="#" class="text-sm text-blue-600 hover:text-blue-700"
+          >Forgot password?</a
+        >
+      </div>
+      <button
+        type="submit"
+        class="w-full py-3 mt-6 bg-[#063970] rounded-md text-white font-semibold hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+      >
+        Registrasi
+      </button>
+    </form>
+    <div class="mt-6 text-sm text-center text-gray-600">
+      Have an account?
+      <a href="/login" class="text-blue-600 hover:text-blue-700">Login here</a>
+    </div>
+  </div>
+</div>
