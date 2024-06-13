@@ -1,27 +1,33 @@
 {% extends "../base/base.html" %} {% block title %} Index Page {% endblock %}
 {%block template %}
-<div class="container-lg my-5">
-  <div class="row justify-content-center align-items-center">
-    <div class="col-md-5">
-      <!-- Tambahkan gambar di sini -->
-      <img
-        src="https://algrafika.com/wp-content/uploads/2022/07/Robo-Home.png"
-        class="img-fluid"
-        alt="Robot Image"
-      />
-    </div>
-    <div class="col-md-6">
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search for courses..."
-        />
-        <div class="input-group-append">
-          <button class="btn btn-primary" type="button">Search</button>
-        </div>
-      </div>
+<main class="font-abhaya-libre relative py-24">
+  <div
+    class="container mx-auto px-6 sm:px-12 flex flex-col items-center justify-center relative z-10"
+  >
+    <div class="sm:w-1/2 xl:w-2/6 flex flex-col items-center">
+      <h1
+        class="text-6xl xl:text-10xl font-abhaya-libre text-blue-900 font-bold leading-none text-center mb-8"
+      >
+        ReSus
+      </h1>
+      <h2
+        class="text-xl xl:text-3xl font-abhaya-libre text-blue-900 uppercase font-bold leading-none tracking-widest mb-6 text-center"
+      >
+        Rekomendasi Kursus
+      </h2>
+      <p
+        class="xl:text-lg tracking-wider text-blue-700 font-alegraya-sans text-center mb-8"
+      >
+        ReSus merupakan Rekomendasi Kursus Online yang menyediakan banyak kursus
+        online dari berbagai penyedia kursus online yang terkenal di Indonesia.
+      </p>
+      <a
+        href="/courses"
+        class="font-montserrat text-white sm:font-xl uppercase py-3 px-6 sm:py-4 sm:px-8 rounded-full shadow-lg bg-blue-900 hover:bg-blue-800"
+      >
+        Lihat Seluruh Kursus
+      </a>
     </div>
   </div>
-</div>
+</main>
 {% endblock %}

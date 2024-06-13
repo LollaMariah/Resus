@@ -1,0 +1,170 @@
+{% extends "../base/base.html" %} {% block title %} Topik untuk {{ role_name }}
+{% endblock %} {% block template %} {% load static %}
+
+<script>
+  function selectTopic(topicName) {
+    var selectedTopics = document.querySelectorAll(".selected-topic");
+    var selectedTopicNames = [];
+    selectedTopics.forEach(function (topic) {
+      selectedTopicNames.push(topic.textContent.trim());
+    });
+
+    if (selectedTopicNames.includes(topicName)) {
+      document.getElementById(topicName).classList.remove("selected-topic");
+    } else {
+      if (selectedTopics.length < 3) {
+        document.getElementById(topicName).classList.add("selected-topic");
+      } else {
+        alert("Anda hanya bisa memilih maksimal 3 topik.");
+      }
+    }
+    updateSubmitButton();
+    updateNextButtonColor();
+  }
+
+  function updateNextButtonColor() {
+    var selectedTopics = document.querySelectorAll(".selected-topic");
+    var nextButton = document.getElementById("btnSelanjutnya");
+
+    if (selectedTopics.length > 0) {
+      nextButton.classList.remove("bg-gray-300", "cursor-not-allowed");
+      nextButton.classList.add(
+        "bg-blue-600",
+        "hover:bg-blue-700",
+        "cursor-pointer"
+      );
+    } else {
+      nextButton.classList.remove(
+        "bg-blue-600",
+        "hover:bg-blue-700",
+        "cursor-pointer"
+      );
+      nextButton.classList.add("bg-gray-300", "cursor-not-allowed");
+    }
+  }
+
+  function updateSubmitButton() {
+    var selectedTopics = document.querySelectorAll(".selected-topic");
+    var submitButton = document.getElementById("btnSelanjutnya");
+
+    if (selectedTopics.length >= 1 && selectedTopics.length <= 3) {
+      submitButton.disabled = false;
+    } else {
+      submitButton.disabled = true;
+    }
+  }
+
+  function redirectToTopics() {
+    var selectedTopics = document.querySelectorAll(".selected-topic");
+    if (selectedTopics.length < 1) {
+      alert("Anda harus memilih minimal satu topik.");
+    } else {
+      var topicNames = [];
+      selectedTopics.forEach(function (topic) {
+        topicNames.push(topic.id);
+      });
+      var url = "{% url 'course_list' %}?topics=" + topicNames.join("&topics=");
+      window.location.href = url;
+    }
+  }
+</script>
+
+<style>
+  .selected-topic {
+    background-color: blue;
+    color: white;
+  }
+</style>
+
+<div class="h-auto flex flex-col py-12">
+  <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0">
+    <div class="flex justify-center">
+      <img
+        src="{% static 'images/topik.png' %}"
+        alt="Deskripsi Gambar"
+        class="max-w-90 h-auto bg-transparent"
+      />
+    </div>
+    <div class="space-y-4 space-x-2 px-4 md:px-8">
+      <h1 class="text-4xl font-bold mb-6 text-blue-600">
+        Topik untuk {{ role_name }}
+      </h1>
+      <div
+        class="flex bg-blue-100 rounded-lg p-2 mb-4 text-sm text-blue-700"
+        role="alert"
+      >
+        <svg
+          class="w-5 h-5 inline mr-3"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div>
+          <span class="font-smaller"
+            >Wajib memilih Maksimal 3 Topik yang diinginkan terlebih
+            dahulu</span
+          >
+        </div>
+      </div>
+      {% if topics %}
+      <div class="space-y-2">
+        {% for topic in topics %}
+        <button
+          id="{{ topic.name }}"
+          class="middle none center rounded-lg text-blue-600 border-1 border-blue-700 px-3 py-1 font-sans text-xs font-bold uppercase transition-all hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white active:bg-blue-600 disabled:pointer-events-none disabled:opacity-100 disabled:shadow-none h-12"
+          data-ripple-dark="true"
+          onclick="selectTopic('{{ topic.name }}')"
+        >
+          {{ topic.name }} {% if topic.name in selected_topics %}
+          <span
+            class="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full"
+            >Selected</span
+          >
+          {% endif %}
+        </button>
+        {% endfor %}
+      </div>
+      <div class="flex justify-center">
+        <button
+          class="rounded-lg text-white py-3 px-6 font-sans text-xs font-bold uppercase transition-all bg-gray-300 cursor-not-allowed"
+          id="btnSelanjutnya"
+          disabled
+          onclick="redirectToTopics()"
+        >
+          Selanjutnya
+        </button>
+      </div>
+      {% else %}
+      <div
+        class="flex bg-blue-100 rounded-lg p-2 mb-4 text-sm text-blue-700"
+        role="alert"
+      >
+        <svg
+          class="w-5 h-5 inline mr-3"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div>
+          <span class="font-smaller"
+            >Tidak ada topik yang tersedia untuk role ini.</span
+          >
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

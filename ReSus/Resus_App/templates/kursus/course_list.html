@@ -1,0 +1,50 @@
+{% extends "../base/base.html" %} {% block title %} Courses {% endblock %}
+{%block template %} {% load static %}
+<div class="h-auto flex flex-col justify-center mb-9 py-12">
+  <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-10 mx-auto">
+    {% if courses %} {% for course in courses %}
+    <div class="max-w-sm rounded overflow-hidden shadow-lg">
+      <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+        <!-- Wrapper untuk menjaga ukuran frame -->
+        <img
+          class="object-cover h-full w-full"
+          src="{{ course.image }}"
+          alt="{{ course.title }}"
+        />
+      </div>
+      {% if course in top_courses %}
+      <div class="flex justify-center py-3 bg-blue-100">
+        <span class="text-blue-700">Kursus Terpopuler</span>
+        <i class="bi bi-star-fill text-yellow-500 ml-2"></i>
+      </div>
+      {% endif %}
+      <div class="px-6 py-2">
+        <div class="font-bold text-xl">
+          <a href="{% url 'course_detail' course.courseId %}"
+            >{{ course.title }}</a
+          >
+        </div>
+      </div>
+      <div class="garis">
+        <hr class="bg-blue-500" style="height: 3px" />
+      </div>
+      <div class="py-3 mx-3 flex flex-col">
+        <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+          <i class="bi bi-cash-coin text-green-700 mr-2"></i>
+          {{ course.price }}
+        </div>
+        <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+          <i class="bi bi-mortarboard text-green-700 mr-2"></i>
+          {{ course.platform }}
+        </div>
+        <div>Degree Centrality: {{ course.degree }}</div>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="flex justify-center">
+      <p class="text-gray-700">No courses available for the selected topics.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

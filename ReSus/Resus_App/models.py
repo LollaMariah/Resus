@@ -1,42 +1,55 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.db import models
+from neomodel import StructuredNode, StringProperty, IntegerProperty, RelationshipFrom, RelationshipTo, UniqueIdProperty, DateTimeProperty, StructuredRel
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+class AccessRel(StructuredRel):
+    date_accessed = DateTimeProperty(default_now=True)
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+class Topic(StructuredNode):
+    topicId = StringProperty(unique_index=True)
+    name = StringProperty()
+    # Relationship to Course
+    is_about = RelationshipFrom('Course', 'IS_ABOUT')
 
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+class Platform(StructuredNode):
+    platformId = StringProperty(unique_index=True)
+    name = StringProperty()
 
-        return self.create_user(email, password, **extra_fields)
+class Role(StructuredNode):
+    role_id = StringProperty(unique_index=True)
+    name = StringProperty()
+    topics = RelationshipTo(Topic, 'CONSIST_OF')
 
-class User(AbstractBaseUser):
-    email = models.EmailField(unique=True, max_length=255)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+class User(StructuredNode):
+    userId = UniqueIdProperty()
+    name = StringProperty(unique_index=True, required=True)
+    email = StringProperty(unique_index=True, required=True)
+    password = StringProperty(required=True)
 
-    objects = UserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
+    # Relationship to Course
+    has_accessed = RelationshipTo('Course', 'HAS_ACCESSED', model=AccessRel)
 
     def __str__(self):
-        return self.email
+        return self.name
+
+class Course(StructuredNode):
+    courseId = StringProperty(unique_index=True)
+    title = StringProperty()
+    description = StringProperty()
+    duration = StringProperty()
+    image = StringProperty()
+    level = StringProperty()
+    price = StringProperty()
+    url = StringProperty()
+    degree = IntegerProperty()
+
+    # Relationship from User
+    accessed_by = RelationshipFrom('User', 'HAS_ACCESSED', model=AccessRel)
+
+    # Relationship to Topic
+    is_about = RelationshipTo(Topic, 'IS_ABOUT')
+
+    # Relationship to Platform
+    belongs_to = RelationshipTo(Platform, 'BELONGS_TO')
+
+    def get_accessed_degree(self):
+        # Count the number of users who have accessed this course
+        return len(self.accessed_by.all())

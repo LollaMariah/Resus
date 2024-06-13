@@ -1,0 +1,146 @@
+{% extends "../base/base.html" %} {% block title %} Detail Kursus {% endblock %}
+{% block template %}
+<section class="text-gray-700 body-font overflow-hidden bg-white py-10">
+  <div class="container px-5 mx-auto">
+    <div class="lg:w-4/5 mx-auto flex flex-wrap">
+      <div class="lg:w-2/5 w-full">
+        <div class="aspect-w-1 aspect-h-1 my-4">
+          <img
+            alt="gambar kursus"
+            class="object-cover object-center rounded border border-gray-200 w-full h-full"
+            src="{{ course.image }}"
+          />
+        </div>
+        <!-- List of related courses -->
+        <div class="mt-8">
+          <h2 class="text-lg font-semibold mb-4">Kursus Terkait</h2>
+          <div class="space-y-4">
+            <!-- Static list of related courses -->
+            <div class="flex items-center">
+              <img
+                alt="course 1"
+                class="w-16 h-16 object-cover rounded border border-gray-200"
+                src="https://banper.binsuslat.kemdikbud.go.id/ayo_kursus/front_assets/images/Infografis%20Ayo%20Kursus-1-100.jpg"
+              />
+              <div class="ml-4">
+                <a href="#" class="text-blue-600 hover:underline">
+                  Related Course Title 1
+                </a>
+                <p class="text-gray-500 text-sm">Duration: 3 hours</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <img
+                alt="course 2"
+                class="w-16 h-16 object-cover rounded border border-gray-200"
+                src="https://banper.binsuslat.kemdikbud.go.id/ayo_kursus/front_assets/images/Infografis%20Ayo%20Kursus-1-100.jpg"
+              />
+              <div class="ml-4">
+                <a href="#" class="text-blue-600 hover:underline">
+                  Related Course Title 2
+                </a>
+                <p class="text-gray-500 text-sm">Duration: 2 hours</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <img
+                alt="course 3"
+                class="w-16 h-16 object-cover rounded border border-gray-200"
+                src="https://banper.binsuslat.kemdikbud.go.id/ayo_kursus/front_assets/images/Infografis%20Ayo%20Kursus-1-100.jpg"
+              />
+              <div class="ml-4">
+                <a href="#" class="text-blue-600 hover:underline">
+                  Related Course Title 3
+                </a>
+                <p class="text-gray-500 text-sm">Duration: 4 hours</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lg:w-3/5 w-full lg:pl-12 lg:py-6 mt-6 lg:mt-0">
+        <h2 class="text-sm title-font text-gray-500 tracking-widest">
+          JUDUL KURSUS
+        </h2>
+        <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">
+          {{ course.title }}
+        </h1>
+        <div class="flex my-2">
+          <span class="flex items-center bg-gray-100 p-2 rounded-md">
+            <i class="bi bi-cash-coin text-green-700 ml-2"></i>
+            <span class="text-gray-600 ml-3">{{ course.price }}</span>
+          </span>
+          <span class="flex items-center bg-gray-100 p-2 rounded-md ml-4">
+            <i class="bi bi-watch text-blue-700 ml-2"></i>
+            <span class="text-gray-600 ml-1">{{ course.duration }}</span>
+          </span>
+          <span class="flex items-center bg-gray-100 p-2 rounded-md ml-4">
+            <i class="bi bi-medium text-blue-700 ml-2"></i>
+            <span class="text-gray-600 ml-1">Level : {{ course.level }}</span>
+          </span>
+        </div>
+        <p class="leading-relaxed text-justify">{{ course.description }}</p>
+        <div
+          class="flex mt-6 items-center pb-5 border-b-2 border-gray-200 mb-5"
+        ></div>
+        <div class="flex">
+          <button
+            id="access-course-button"
+            data-course-id="{{ course.courseId }}"
+            class="flex ml-auto text-white bg-blue-700 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded"
+          >
+            Akses Kursus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document
+    .getElementById("access-course-button")
+    .addEventListener("click", function () {
+      var courseId = this.getAttribute("data-course-id");
+
+      fetch("{% url 'access_course' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ course_id: courseId }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            Swal.fire({
+              title: "Sukses!",
+              text: "Anda telah mengunjungi dan mencatat kursus ini.",
+              icon: "success",
+              confirmButtonText: "OK",
+            }).then(() => {
+              window.open("{{ course.url }}", "_blank", "noopener,noreferrer");
+            });
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: "Terjadi kesalahan: " + data.message,
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          Swal.fire({
+            title: "Error!",
+            text: "Terjadi kesalahan: " + error.message,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    });
+</script>
+{% endblock %}

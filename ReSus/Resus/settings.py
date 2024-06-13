@@ -18,7 +18,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -27,16 +26,19 @@ INSTALLED_APPS = [
     'Resus_App',
     'neomodel',
     'registration',
+    'django_neomodel',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+   'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Resus_App.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Resus.urls'
@@ -60,18 +62,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Resus.wsgi.application'
 
 # Neo4j configuration for neomodel
-NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL', 'bolt://neo4j:resuskota103@localhost:7687')
+NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:resus12345@localhost:7687'
 
+# Minimal database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy', # Gunakan 'django.db.backends.dummy' karena Anda tidak menggunakan database relasional
-    },
-    'neo4j': {
-        'ENGINE': 'django_neomodel.backend.Neo4j', # Gunakan engine Neo4j yang sesuai
-        'NAME': 'neo4j', # Nama database Neo4j Anda
-        'HOST': 'bolt://localhost:7687', # Host Neo4j Anda
-        'USER': 'neo4j', # Username Neo4j Anda
-        'PASSWORD': 'resuskota103', # Password Neo4j Anda
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -124,7 +121,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]

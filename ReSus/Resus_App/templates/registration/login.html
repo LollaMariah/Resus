@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registrasi ReSus</title>
+    <title>Login</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,32 +16,14 @@
       src="https://unpkg.com/alpinejs@3.2.3/dist/cdn.min.js"
     ></script>
   </head>
-  <body>
-    <div
-      class="flex items-center justify-center h-screen bg-gradient-to-b from-[#3366CC] to-[#FBFFFD]"
-    >
-      <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
+  <body class="bg-gradient-to-b from-[#3366CC] to-[#FBFFFD]">
+    <div class="flex justify-center items-center h-screen">
+      <div class="w-full max-w-md px-6 py-8 bg-white rounded-lg shadow-lg">
         <h2 class="text-3xl font-bold text-center text-[#305EE7] mb-6">
-          Registrasi ReSus
+          Masuk Akun ReSus
         </h2>
         <form method="post" class="space-y-6">
           {% csrf_token %}
-          <div>
-            <label for="name" class="block text-sm font-medium text-blue-700"
-              >Nama Pengguna</label
-            >
-            <div class="mt-1">
-              <input
-                id="name"
-                name="name"
-                placeholder="Masukkan Nama Pengguna"
-                type="text"
-                autocomplete="name"
-                required
-                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-          </div>
           <div>
             <label for="email" class="block text-sm font-medium text-blue-700"
               >Email</label
@@ -51,9 +33,9 @@
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Masukkan Email"
                 autocomplete="email"
                 required
+                placeholder="Masukkan Email Anda"
                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
@@ -70,8 +52,8 @@
                 name="password"
                 type="password"
                 autocomplete="current-password"
-                placeholder="Masukkan Kata Sandi"
                 required
+                placeholder="Masukkan Kata Sandi Anda"
                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
@@ -94,14 +76,16 @@
               type="submit"
               class="w-full py-3 text-white bg-[#305EE7] rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
             >
-              Registrasi
+              Masuk Akun
             </button>
           </div>
         </form>
         <div class="mt-6 text-sm text-center text-gray-600">
-          Sudah Punya Akun ?
-          <a href="/login" class="text-blue-600 hover:text-blue-700"
-            >Masuk Disini</a
+          Tidak Punya Akun?
+          <a
+            href="/Resus_App/register"
+            class="text-blue-600 hover:text-blue-700"
+            >Registrasi Disini</a
           >
         </div>
       </div>

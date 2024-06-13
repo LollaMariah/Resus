@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Access Course</title>
+  </head>
+  <body>
+    <form id="accessForm" method="post">
+      {% csrf_token %}
+      <label for="user">User:</label>
+      <select name="user" id="user">
+        {% for user in users %}
+        <option value="{{ user.userId }}">{{ user.name }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="course">Course:</label>
+      <select name="course" id="course">
+        {% for course in courses %}
+        <option value="{{ course.courseId }}">{{ course.title }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit">Access Course</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("accessForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the form from submitting the default way
+
+          const userId = document.getElementById("user").value;
+          const courseId = document.getElementById("course").value;
+          const actionUrl =
+            "{% url 'access_course' user_id='dummy_user_id' course_id='dummy_course_id' %}"
+              .replace("dummy_user_id", userId)
+              .replace("dummy_course_id", courseId);
+
+          this.action = actionUrl;
+          this.submit(); // Now submit the form with the correct action URL
+        });
+    </script>
+  </body>
+</html>

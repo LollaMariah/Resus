@@ -1,33 +1,86 @@
-{% extends "../base/base.html" %} {% block title %} Index Page {% endblock %}
-{%block template %}{% load static %}
-<div class="min-h-screen flex flex-col">
-  <!-- Konten utama -->
-  <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 px-12">
-    <!-- Kolom untuk gambar -->
-    <div class="flex justify-center items-center">
-      <img src="{% static "/images/search.png" %}" alt="Deskripsi Gambar"
-      class="max-w-full h-auto rounded-lg shadow-lg" />
+{% extends "../base/base.html" %} {% block title %} Pilih Role {% endblock %}
+{%block template %} {% load static %}
+<div class="h-auto flex flex-col py-12">
+  <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0">
+    <div class="flex justify-center">
+      <img
+        src="{% static 'images/role.png' %}"
+        alt="Deskripsi Gambar"
+        class="max-w-90 h-auto bg-transparent"
+      />
     </div>
-    <!-- Kolom untuk tombol -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Mengurangi nilai gap di sini -->
-      {% for i in range %}
-      <button
-        class="middle none center rounded-lg text-blue-600 border border-blue-700 px-2 py-1 font-sans text-xs font-bold uppercase transition-all hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white active:bg-blue-600 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none h-12"
-        data-ripple-dark="true"
+    <div class="space-y-4 space-x-2 px-4 md:px-8">
+      <h1 class="text-4xl font-bold mb-6 text-blue-600">
+        Role Apa Yang Anda Inginkan?
+      </h1>
+      <div
+        class="flex bg-blue-100 rounded-lg p-2 mb-4 text-sm text-blue-700"
+        role="alert"
       >
-        Role {{ i }}
+        <svg
+          class="w-5 h-5 inline mr-3"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div>
+          <span class="font-smaller"
+            >Wajib memilih role yang diinginkan terlebih dahulu</span
+          >
+        </div>
+      </div>
+      {% for role in roles %}
+      <button
+        class="middle none center rounded-lg text-blue-600 border-1 border-blue-700 px-3 py-1 font-sans text-xs font-bold uppercase transition-all hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white active:bg-blue-600 disabled:pointer-events-none disabled:opacity-100 disabled:shadow-none h-12"
+        data-ripple-dark="true"
+        onclick="selectRole('{{ role.name }}')"
+      >
+        {{ role.name }}
       </button>
       {% endfor %}
+      <div class="flex justify-center">
+        <button
+          class="rounded-lg text-white py-3 px-6 font-sans text-xs font-bold uppercase transition-all bg-gray-300 cursor-not-allowed"
+          id="btnSelanjutnya"
+          disabled
+          onclick="redirectToTopics()"
+        >
+          Selanjutnya
+        </button>
+      </div>
     </div>
   </div>
-  <!-- Tombol "Selanjutnya" di bagian bawah konten -->
-  <div class="flex justify-end p-12">
-    <button
-      class="rounded-lg bg-blue-600 text-white py-3 px-6 font-sans text-xs font-bold uppercase transition-all hover:bg-blue-700 focus:bg-blue-800 active:bg-blue-900"
-    >
-      Selanjutnya
-    </button>
-  </div>
 </div>
+
+<script>
+  var selectedRole = null;
+
+  function selectRole(roleName) {
+    selectedRole = roleName;
+    var btnSelanjutnya = document.getElementById("btnSelanjutnya");
+    btnSelanjutnya.removeAttribute("disabled");
+    btnSelanjutnya.classList.remove("bg-gray-300", "cursor-not-allowed");
+    btnSelanjutnya.classList.add(
+      "bg-blue-600",
+      "hover:bg-blue-700",
+      "focus:bg-blue-800",
+      "active:bg-blue-900"
+    );
+    console.log("Role yang dipilih:", roleName); // Debugging log
+  }
+
+  function redirectToTopics() {
+    if (!selectedRole) {
+      alert("Pilih salah satu role terlebih dahulu.");
+    } else {
+      window.location.href = "/topics?role=" + encodeURIComponent(selectedRole);
+    }
+  }
+</script>
 {% endblock %}
