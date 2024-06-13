@@ -12,6 +12,7 @@ class Topic(StructuredNode):
 class Platform(StructuredNode):
     platformId = StringProperty(unique_index=True)
     name = StringProperty()
+    weight = IntegerProperty()
 
 class Role(StructuredNode):
     role_id = StringProperty(unique_index=True)

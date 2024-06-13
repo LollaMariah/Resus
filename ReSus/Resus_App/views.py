@@ -60,10 +60,13 @@ def logout(request):
     messages.success(request, 'Logged out successfully.')
     return redirect('login')
 
+logger = logging.getLogger(__name__)
 @login_required
 def course_list(request):
     selected_topics = request.GET.getlist('topics')
     courses = []
+
+    logger.info(f"Selected topics: {selected_topics}")
 
     try:
         if selected_topics:
@@ -75,7 +78,7 @@ def course_list(request):
             WITH c, p, COUNT(r) as degree
             SET c.degree = degree
             RETURN c, p
-            ORDER BY degree DESC
+            ORDER BY degree DESC, p.weight DESC
             """
             results, meta = db.cypher_query(query, {'topics': selected_topics})
         else:
@@ -86,13 +89,16 @@ def course_list(request):
             WITH c, p, COUNT(r) as degree
             SET c.degree = degree
             RETURN c, p
-            ORDER BY degree DESC
+            ORDER BY degree DESC, p.weight DESC
             """
             results, meta = db.cypher_query(query, {})
+
+        logger.info(f"Query results: {results}")
 
         for record in results:
             course = Course.inflate(record[0])
             platform = record[1]["name"] if record[1] else None
+            platform_weight = record[1]["weight"] if record[1] else 0
             courses.append({
                 "courseId": course.courseId,
                 "title": course.title,
@@ -103,18 +109,18 @@ def course_list(request):
                 "price": course.price,
                 "url": course.url,
                 "degree": course.degree,
-                "platform": platform
+                "platform": platform,
+                "platform_weight": platform_weight
             })
 
-        # Determine the top 3 courses by degree centrality
-        top_courses = sorted(courses, key=lambda x: x['degree'], reverse=True)[:3]
+        # Determine the top 3 courses by degree centrality and platform weight
+        top_courses = sorted(courses, key=lambda x: (x['degree'], x['platform_weight']), reverse=True)[:3]
 
         return render(request, 'kursus/course_list.html', {'courses': courses, 'selected_topics': selected_topics, 'top_courses': top_courses})
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         raise Http404("Error retrieving courses")
-
 @login_required
 def course_detail(request, course_id):
     try:
