@@ -12,6 +12,18 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import logging
 
+# @login_required
+def profile(request):
+    if 'userId' not in request.session:
+        return redirect('login')
+    return render(request, 'profile/profile.html')
+
+def index(request):
+    return render(request, 'kursus/index.html')
+
+def home(request):
+    return render(request, 'home.html')
+
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -50,18 +62,19 @@ def login(request):
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
 
-@login_required
+# @login_required
 def logout(request):
     try:
-        del request.session['user_id']
-        del request.session['username']
+        del request.session['userId']
+        del request.session['name']
     except KeyError:
         pass
     messages.success(request, 'Logged out successfully.')
     return redirect('login')
 
 logger = logging.getLogger(__name__)
-@login_required
+
+# @login_required
 def course_list(request):
     selected_topics = request.GET.getlist('topics')
     courses = []
@@ -121,7 +134,8 @@ def course_list(request):
     except Exception as e:
         logger.error(f"Error: {e}")
         raise Http404("Error retrieving courses")
-@login_required
+
+# @login_required
 def course_detail(request, course_id):
     try:
         course = Course.nodes.get(courseId=course_id)
@@ -137,13 +151,12 @@ def course_detail(request, course_id):
     
     return render(request, 'kursus/course_detail.html', {'course': course, 'platform': platform})
 
-
-@login_required
+# @login_required
 def pilih_role(request):
     roles = Role.nodes.all()
     return render(request, 'kursus/pilih_role.html', {'roles': roles})
 
-@login_required
+# @login_required
 def topics(request):
     role_name = request.GET.get('role')
     topics = []
@@ -157,41 +170,6 @@ def topics(request):
             messages.error(request, str(e))
     return render(request, 'kursus/topics.html', {'topics': topics, 'role_name': role_name})
 
-@login_required
-def profile(request):
-    return render(request, 'profile/profile.html')
-
-def index(request):
-    return render(request, 'kursus/index.html')
-
-def home(request):
-    return render(request, 'home.html')
-
-@login_required
-def access_course(request, course_id):
-    try:
-        # Ambil pengguna yang terautentikasi dari sesi Django
-        django_user = request.user
-        user = User.nodes.get(userId=str(django_user.id))
-        
-        # Ambil kursus yang akan diakses
-        course = Course.nodes.get(courseId=course_id)
-        
-        # Hubungkan pengguna dengan kursus
-        user.has_accessed.connect(course, {'date_accessed': timezone.now()})
-        
-        # Ambil URL kursus dan lemparkan pengguna ke URL tersebut
-        return redirect(course.url)
-    except User.DoesNotExist:
-        messages.error(request, 'User does not exist.')
-        return redirect('login')
-    except Course.DoesNotExist:
-        messages.error(request, 'Course does not exist.')
-        return redirect('course_list')
-    except Exception as e:
-        messages.error(request, str(e))
-        return redirect('course_list')
-    
 def all_topics(request):
     topics = Topic.nodes.all()
     return render(request, 'kursus/all_topics.html', {'topics': topics})
@@ -230,30 +208,115 @@ def accessed_users(request):
         accessed_courses = user.has_accessed.all()
         return render(request, 'profile/profile.html', {'accessed_courses': accessed_courses})
     except User.DoesNotExist:
-        # Handle the case when user does not exist
         pass
     
 logger = logging.getLogger(__name__)
 
-@login_required
-@require_POST
-def access_course(request):
-    user = request.user
-    course_id = request.POST.get('course_id')
-
-    logger.info(f"User: {user.username}, Course ID: {course_id}")
+# @login_required
+def log_course_access(request, course_title):
+    user_name = request.session.user_name
 
     try:
-        query = """
-        MATCH (u:User {name: $name}), (c:Course {courseId: $course_id})
-        MERGE (u)-[:HAS_ACCESSED {date_accessed: datetime()}]->(c)
-        RETURN u, c
-        """
-        params = {'name': user.username, 'course_id': course_id}
-        logger.info(f"Running query: {query} with params: {params}")
-        results, meta = db.cypher_query(query, params)
-        logger.info(f"Query Results: {results}")
-        return JsonResponse({'status': 'success'}, status=200)
+        user = User.nodes.get(name=user_name)
+        course = Course.nodes.get(title=course_title)
+        user.has_accessed.connect(course, {'datetime': timezone.now()})
+    except User.DoesNotExist:
+        messages.error(request, 'Pengguna tidak ada.')
+        return redirect('login')
+    except Course.DoesNotExist:
+        messages.error(request, 'Kursus tidak ada.')
+        return redirect('course_list')
     except Exception as e:
-        logger.error(f"Error: {e}")
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        messages.error(request, str(e))
+        return redirect('course_list')
+
+    # Mengambil rekomendasi kursus berdasarkan similarity
+    recommendations = get_course_recommendations(user)
+
+    # Mengambil kursus yang telah diakses
+    accessed_courses = get_accessed_courses(user)
+
+    # Redirect ke halaman profil dengan daftar kursus yang telah diakses dan rekomendasi
+    return render(request, 'profile/profile.html', {
+        'course_title': course_title,
+        'recommended_courses': recommendations,
+        'accessed_courses': accessed_courses
+    })
+
+
+def get_course_recommendations(request, user):
+    username = request.user.name
+
+    query = """
+    CALL gds.nodeSimilarity.stream('gds-sim')
+    YIELD node1, node2, similarity
+    WITH gds.util.asNode(node1) AS c1, gds.util.asNode(node2) AS c2, similarity
+
+    MATCH (u:User {name: $username})-[:HAS_ACCESSED]->(c1)
+    WITH DISTINCT c1, c2, similarity
+    WHERE NOT c1.title = c2.title AND similarity >= 0.5
+    OPTIONAL MATCH (c1)-[:IS_ABOUT]->(t:Topic)<-[:IS_ABOUT]-(c2)
+    WITH DISTINCT c1, c2, similarity
+    RETURN similarity, c2.title AS title, c2.url AS url, c2.image AS image, c2.price AS price, c2.platform AS platform
+    ORDER BY similarity DESCENDING, c2.title
+    """
+
+    params = {'user_name': user.name}
+    results, meta = db.cypher_query(query, params)
+    
+    recommendations = [
+        {
+            "similarity": record[0],
+            "title": record[1],
+            "url": record[2],
+            "image": record[3] if record[3] else "https://blog.ecampuz.com/wp-content/uploads/2020/05/tips-kursus-online-ecampuz.jpg",
+            "price": record[4] if record[4] else "Rp. 0",
+            "platform": record[5] if record[5] else "Unknown"
+        }
+        for record in results
+    ]
+
+    return recommendations
+
+def get_accessed_courses(user):
+    query = """
+    MATCH (u:User {name: $user_name})-[:HAS_ACCESSED]->(c:Course)
+    RETURN c.title AS title, c.url AS url
+    ORDER BY c.title
+    """
+
+    params = {'user_name': user.name}
+    results, meta = db.cypher_query(query, params)
+    
+    accessed_courses = [
+        {
+            "title": record[0],
+            "url": record[1]
+        }
+        for record in results
+    ]
+
+    return accessed_courses
+
+@login_required
+def access_course(request, course_id):
+    try:
+        user = User.nodes.get(userId=str(request.session.user_id))
+        
+        # Ambil kursus yang akan diakses
+        course = Course.nodes.get(courseId=course_id)
+        
+        # Hubungkan pengguna dengan kursus
+        user.has_accessed.connect(course, {'date_accessed': timezone.now()})
+        
+        # Ambil URL kursus dan lemparkan pengguna ke URL tersebut
+        return redirect(course.url)
+    except User.DoesNotExist:
+        messages.error(request, 'Pengguna tidak ada.')
+        return redirect('login')
+    except Course.DoesNotExist:
+        messages.error(request, 'Kursus tidak ada.')
+        return redirect('course_list')
+    except Exception as e:
+        messages.error(request, str(e))
+        return redirect('course_list')

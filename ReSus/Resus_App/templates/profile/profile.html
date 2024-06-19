@@ -46,137 +46,109 @@
       </div>
 
       <!-- Kursus yang pernah dikunjungi Section -->
-      <div class="w-full flex flex-col 2xl:w-1/3">
-        <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8">
-          <h4 class="text-xl text-gray-900 font-bold">
-            Kursus yang pernah dikunjungi
-          </h4>
-          <div class="relative px-4">
-            <div
-              class="absolute h-full border border-dashed border-opacity-20 border-secondary"
-            ></div>
-            {% for course in accessed_courses %}
-            <div class="flex items-center w-full my-6 -ml-1.5">
-              <div class="w-1/12 z-10">
-                <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
-              </div>
-              <div class="w-11/12">
-                <p class="text-sm">
-                  <a href="#" class="text-blue-600 font-bold"
-                    >{{ course.title }}</a
-                  >
-                </p>
+          <div class="w-full flex flex-col 2xl:w-1/3">
+            <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8">
+              <h4 class="text-xl text-gray-900 font-bold">
+                Kursus yang pernah dikunjungi
+              </h4>
+              <div class="relative px-4">
+                <div
+                  class="absolute h-full border border-dashed border-opacity-20 border-secondary"
+                ></div>
+                {% for course in accessed_courses %}
+                <div class="flex items-center w-full my-6 -ml-1.5">
+                  <div class="w-1/12 z-10">
+                    <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <div class="w-11/12">
+                    <p class="text-sm">
+                      <a href="{{ course.url }}" class="text-blue-600 font-bold">
+                        {{ course.title }}
+                      </a>
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
               </div>
             </div>
-            {% endfor %}
           </div>
-        </div>
-      </div>
 
-      <!-- Rekomendasi Kursus Section -->
-      <div class="w-full flex flex-col 2xl:w-1/3">
-        <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8">
-          <h4 class="text-xl text-gray-900 font-bold">
-            Rekomendasi Kursus Untukmu
-          </h4>
-          <div class="relative px-4">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6"
-            >
-              <!-- Static Course Cards -->
-              <div class="max-w-sm rounded overflow-hidden shadow-lg">
-                <div
-                  class="w-full h-48 bg-gray-200 flex items-center justify-center"
-                >
-                  <img
-                    class="object-cover h-full w-full"
-                    src="https://blog.ecampuz.com/wp-content/uploads/2020/05/tips-kursus-online-ecampuz.jpg"
-                    alt="Course Title"
-                  />
-                </div>
-                <div class="px-6 py-2">
-                  <div class="font-bold text-xl">
-                    <a href="#">Course Title</a>
+        <!-- Rekomendasi Kursus Section -->
+        <div class="w-full flex flex-col 2xl:w-1/3">
+          <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8">
+            <h4 class="text-xl text-gray-900 font-bold">
+              Rekomendasi Kursus Untukmu
+            </h4>
+            <div class="relative px-4">
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6"
+              >
+                {% if recommended_courses %}
+                  {% for course in recommended_courses %}
+                  <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                      <img
+                        class="object-cover h-full w-full"
+                        src="{{ course.image }}"
+                        alt="{{ course.title }}"
+                      />
+                    </div>
+                    <div class="px-6 py-2">
+                      <div class="font-bold text-xl">
+                        <a href="{{ course.url }}">
+                          {{ course.title }}
+                        </a>
+                      </div>
+                    </div>
+                    <div class="garis">
+                      <hr class="bg-blue-500" style="height: 3px" />
+                    </div>
+                    <div class="py-3 mx-3 flex flex-col">
+                      <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+                        <i class="bi bi-cash-coin text-green-700 mr-2"></i>
+                        {{ course.price }}
+                      </div>
+                      <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+                        <i class="bi bi-mortarboard text-green-700 mr-2"></i>
+                        {{ course.platform }}
+                      </div>
+                      <div>Similarity: {{ course.similarity }}</div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                  <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <img
+                      class="object-cover h-full w-full"
+                      src="https://blog.ecampuz.com/wp-content/uploads/2020/05/tips-kursus-online-ecampuz.jpg"
+                      alt="Course Title"
+                    />
+                  </div>
+                  <div class="px-6 py-2">
+                    <div class="font-bold text-xl">
+                      <a href="#">Course Title</a>
+                    </div>
+                  </div>
+                  <div class="garis">
+                    <hr class="bg-blue-500" style="height: 3px" />
+                  </div>
+                  <div class="py-3 mx-3 flex flex-col">
+                    <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+                      <i class="bi bi-cash-coin text-green-700 mr-2"></i>
+                      Rp. 24.900
+                    </div>
+                    <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
+                      <i class="bi bi-mortarboard text-green-700 mr-2"></i>
+                      Udemy
+                    </div>
+                    <div>Similarity: 0.8</div>
                   </div>
                 </div>
-                <div class="garis">
-                  <hr class="bg-blue-500" style="height: 3px" />
-                </div>
-                <div class="py-3 mx-3 flex flex-col">
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-cash-coin text-green-700 mr-2"></i>
-                    Rp. 24.900
-                  </div>
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-mortarboard text-green-700 mr-2"></i>
-                    Udemy
-                  </div>
-                  <div>Similarity: 0.8</div>
-                </div>
-              </div>
-              <div class="max-w-sm rounded overflow-hidden shadow-lg">
-                <div
-                  class="w-full h-48 bg-gray-200 flex items-center justify-center"
-                >
-                  <img
-                    class="object-cover h-full w-full"
-                    src="https://blog.ecampuz.com/wp-content/uploads/2020/05/tips-kursus-online-ecampuz.jpg"
-                    alt="Course Title"
-                  />
-                </div>
-                <div class="px-6 py-2">
-                  <div class="font-bold text-xl">
-                    <a href="#">Course Title</a>
-                  </div>
-                </div>
-                <div class="garis">
-                  <hr class="bg-blue-500" style="height: 3px" />
-                </div>
-                <div class="py-3 mx-3 flex flex-col">
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-cash-coin text-green-700 mr-2"></i>
-                    Rp. 24.900
-                  </div>
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-mortarboard text-green-700 mr-2"></i>
-                    Coursera
-                  </div>
-                  <div>Similarity: 0.7</div>
-                </div>
-              </div>
-              <div class="max-w-sm rounded overflow-hidden shadow-lg">
-                <div
-                  class="w-full h-48 bg-gray-200 flex items-center justify-center"
-                >
-                  <img
-                    class="object-cover h-full w-full"
-                    src="https://blog.ecampuz.com/wp-content/uploads/2020/05/tips-kursus-online-ecampuz.jpg"
-                    alt="Course Title"
-                  />
-                </div>
-                <div class="px-6 py-2">
-                  <div class="font-bold text-xl">
-                    <a href="#">Course Title</a>
-                  </div>
-                </div>
-                <div class="garis">
-                  <hr class="bg-blue-500" style="height: 3px" />
-                </div>
-                <div class="py-3 mx-3 flex flex-col">
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-cash-coin text-green-700 mr-2"></i>
-                    Free
-                  </div>
-                  <div class="mb-2 bg-blue-50 rounded-lg p-2 flex items-center">
-                    <i class="bi bi-mortarboard text-green-700 mr-2"></i>
-                    edX
-                  </div>
-                  <div>Similarity: 0.6</div>
-                </div>
+                {% endif %}
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   </body>
