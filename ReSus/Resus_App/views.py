@@ -2,11 +2,10 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm
 from .models import User, Role, Course, Topic
 from neomodel.exceptions import DoesNotExist
-from django.http import Http404,HttpResponseNotFound
+from django.http import Http404, HttpResponseNotFound
 from neomodel import db
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -50,7 +49,6 @@ def login(request):
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
 
-@login_required
 def logout(request):
     try:
         del request.session['user_id']
@@ -61,7 +59,7 @@ def logout(request):
     return redirect('login')
 
 logger = logging.getLogger(__name__)
-@login_required
+
 def course_list(request):
     selected_topics = request.GET.getlist('topics')
     courses = []
@@ -121,7 +119,7 @@ def course_list(request):
     except Exception as e:
         logger.error(f"Error: {e}")
         raise Http404("Error retrieving courses")
-@login_required
+
 def course_detail(request, course_id):
     try:
         course = Course.nodes.get(courseId=course_id)
@@ -137,13 +135,10 @@ def course_detail(request, course_id):
     
     return render(request, 'kursus/course_detail.html', {'course': course, 'platform': platform})
 
-
-@login_required
 def pilih_role(request):
     roles = Role.nodes.all()
     return render(request, 'kursus/pilih_role.html', {'roles': roles})
 
-@login_required
 def topics(request):
     role_name = request.GET.get('role')
     topics = []
@@ -157,8 +152,10 @@ def topics(request):
             messages.error(request, str(e))
     return render(request, 'kursus/topics.html', {'topics': topics, 'role_name': role_name})
 
-@login_required
 def profile(request):
+    # If profile view should be protected, leave it with login_required
+    if 'user_id' not in request.session:
+        return redirect('login')
     return render(request, 'profile/profile.html')
 
 def index(request):
@@ -167,12 +164,12 @@ def index(request):
 def home(request):
     return render(request, 'home.html')
 
-@login_required
 def access_course(request, course_id):
     try:
-        # Ambil pengguna yang terautentikasi dari sesi Django
-        django_user = request.user
-        user = User.nodes.get(userId=str(django_user.id))
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+        user = User.nodes.get(userId=user_id)
         
         # Ambil kursus yang akan diakses
         course = Course.nodes.get(courseId=course_id)
@@ -230,26 +227,26 @@ def accessed_users(request):
         accessed_courses = user.has_accessed.all()
         return render(request, 'profile/profile.html', {'accessed_courses': accessed_courses})
     except User.DoesNotExist:
-        # Handle the case when user does not exist
         pass
     
 logger = logging.getLogger(__name__)
 
-@login_required
 @require_POST
 def access_course(request):
-    user = request.user
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'status': 'error', 'message': 'User not authenticated'}, status=400)
     course_id = request.POST.get('course_id')
 
-    logger.info(f"User: {user.username}, Course ID: {course_id}")
+    logger.info(f"User ID: {user_id}, Course ID: {course_id}")
 
     try:
         query = """
-        MATCH (u:User {name: $name}), (c:Course {courseId: $course_id})
+        MATCH (u:User {userId: $user_id}), (c:Course {courseId: $course_id})
         MERGE (u)-[:HAS_ACCESSED {date_accessed: datetime()}]->(c)
         RETURN u, c
         """
-        params = {'name': user.username, 'course_id': course_id}
+        params = {'user_id': user_id, 'course_id': course_id}
         logger.info(f"Running query: {query} with params: {params}")
         results, meta = db.cypher_query(query, params)
         logger.info(f"Query Results: {results}")
