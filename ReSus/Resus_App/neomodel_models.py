@@ -19,9 +19,7 @@ class Course(StructuredNode):
     image = StringProperty()
     price = StringProperty()
     platform = StringProperty()
-    is_about = RelationshipTo('Topic', 'IS_ABOUT')
 
 class User(StructuredNode):
     userId = StringProperty(unique_index=True)
     name = StringProperty()
-    has_accessed = RelationshipTo(Course, 'HAS_ACCESSED')
